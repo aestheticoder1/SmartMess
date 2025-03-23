@@ -1,0 +1,11 @@
+const mongoose = require('mongoose');
+
+const paymentSchema = new mongoose.Schema({
+    studentId: { type: String, required: true },
+    amount: { type: Number, required: true },
+    status: { type: String, enum: ['Pending', 'Completed'], default: 'Pending' },
+    transactionId: { type: String, unique: true },
+    paymentDate: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Payment', paymentSchema);

@@ -1,0 +1,32 @@
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/database');
+const cookieParser = require('cookie-parser')
+
+
+const app = express();
+app.use(express.json());
+app.use(cookieParser()); // To parse cookies
+app.use(cors());
+
+dotenv.config();
+
+const authRoutes = require("./routes/auth")
+const menuRoutes = require("./routes/menu")
+
+const PORT = process.env.PORT || 3000;
+
+// CONNECT TO MONGODB
+connectDB();
+
+app.get("/", (req, res) => {
+    res.send("Welcome to SmartMess API");
+})
+
+app.use("/api/user", authRoutes);
+app.use("/api/menu", menuRoutes);
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+})
