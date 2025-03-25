@@ -14,6 +14,7 @@ dotenv.config();
 
 const authRoutes = require("./routes/auth")
 const menuRoutes = require("./routes/menu")
+const attendanceRoutes = require("./routes/attendance")
 
 const PORT = process.env.PORT || 3000;
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", authRoutes);
 app.use("/api/menu", menuRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

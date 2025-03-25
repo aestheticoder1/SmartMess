@@ -43,8 +43,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { emailId, password } = req.body;
-
-        const user = await User.findOne({emailId: emailId});
+        // console.log(emailId);
+        let user = await User.findOne({ email:emailId });
         if (!user) {
             throw new Error("No such user found");
         }
