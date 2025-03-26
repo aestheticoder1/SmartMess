@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
         enum: ["student", "admin"],
         default: "student",
     },
-    studentId: { 
+    studentRollNo: { 
         type: String, 
         unique: true, 
         sparse: true 

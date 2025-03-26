@@ -14,7 +14,8 @@ const attendanceSchema = new mongoose.Schema({
         type: String,
         enum: ["present", "absent"],
         required: true
-    }
+    },
+    is_billed: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);
