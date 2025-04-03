@@ -26,6 +26,32 @@ router.post("/mark", userAuth, isAdmin, async (req, res) => {
 });
 
 
+// 2. MARK ALL STUDENTS PRESENT (Admin Only)
+// Marks all students as present for a given date.
+
+router.post("/mark-all", userAuth, isAdmin, async (req, res) => {
+    const { date } = req.body;
+
+    try {
+        const students = await Student.find({}, "_id"); // Fetch all student IDs
+
+        const bulkOperations = students.map(student => ({
+            updateOne: {
+                filter: { studentId: student._id, date },
+                update: { status: "Present" },
+                upsert: true,
+            },
+        }));
+
+        await Attendance.bulkWrite(bulkOperations);
+
+        res.status(201).json({ message: "All students marked as present" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 /**
 2. GET BILL (Unpaid Present Days × Meal Price)
 Returns the total amount due for a student.
