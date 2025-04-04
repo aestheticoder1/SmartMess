@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { userAuth } = require('../middlewares/auth');
 const router = express.Router();
 
 
@@ -31,7 +32,7 @@ router.post('/register', async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Server Error: ", error.message);
+        res.status(500).json({ message: "Server Error: " + error.message });
     }
 });
 
@@ -71,6 +72,13 @@ router.post('/login', async (req, res) => {
     catch (err) {
         res.status(400).send("Error : " + err.message);
     }
+});
+
+// User Profile
+router.get("/profile", userAuth, async (req, res) => {
+    const user = await User.findById(req.user.id).select("-password");
+
+    res.json({ user }); // THIS must exist
 });
 
 module.exports = router;

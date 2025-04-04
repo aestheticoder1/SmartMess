@@ -1,24 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = {
-    isAuthenticated: false,
-    user: null, // { name: '', role: '' }
+export const fetchUser = () => async (dispatch) => {
+    try {
+        const res = await axios.get("http://localhost:5000/api/user/profile", { withCredentials: true });
+        dispatch(setUser(res.data.user));
+    } catch (err) {
+        console.error("Auto-login failed: ", err.message);
+    }
 };
 
 const authSlice = createSlice({
     name: "auth",
-    initialState,
+    initialState: {
+        user: null,
+    },
     reducers: {
-        loginSuccess: (state, action) => {
-            state.isAuthenticated = true;
+        setUser: (state, action) => {
+            // console.log(action.payload);
             state.user = action.payload;
+            // console.log(state.user);
         },
-        logout: (state) => {
-            state.isAuthenticated = false;
+        logoutUser: (state) => {
             state.user = null;
         },
     },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { setUser, logoutUser } = authSlice.actions;
 export default authSlice.reducer;
