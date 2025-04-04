@@ -1,7 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { userAuth, isAdmin } = require('../middlewares/auth');
+const User = require("../models/User");
 const Attendance = require("../models/Attendance");
+const Rebate = require("../models/Rebate");
 
 const router = express.Router();
 const DAILY_MEAL_PRICE = 105
@@ -29,25 +31,42 @@ router.post("/mark", userAuth, isAdmin, async (req, res) => {
 // 2. MARK ALL STUDENTS PRESENT (Admin Only)
 // Marks all students as present for a given date.
 
+
 router.post("/mark-all", userAuth, isAdmin, async (req, res) => {
-    const { date } = req.body;
-
     try {
-        const students = await Student.find({}, "_id"); // Fetch all student IDs
+        const { date } = req.body;
+        if (!date) return res.status(400).json({ message: "Date is required" });
 
-        const bulkOperations = students.map(student => ({
+        const targetDate = new Date(date);
+        targetDate.setUTCHours(0, 0, 0, 0); // Normalize to UTC start of day
+
+        //  Get all student IDs
+        const students = await User.find({ role: "student" }).select("_id");
+
+        // Students on approved rebate for this date
+        const rebates = await Rebate.find({
+            status: "Approved",
+            startDate: { $lte: targetDate },
+            endDate: { $gte: targetDate }
+        }).select("studentId");
+
+        const rebateSet = new Set(rebates.map(r => r.studentId.toString()));
+
+        // Create attendance ops
+        const bulkOps = students.map(({ _id }) => ({
             updateOne: {
-                filter: { studentId: student._id, date },
-                update: { status: "Present" },
-                upsert: true,
-            },
+                filter: { studentId: _id, date: targetDate },
+                update: { $set: { status: rebateSet.has(_id.toString()) ? "absent" : "present" } },
+                upsert: true
+            }
         }));
 
-        await Attendance.bulkWrite(bulkOperations);
+        await Attendance.bulkWrite(bulkOps);
 
-        res.status(201).json({ message: "All students marked as present" });
+        res.json({ message: "Attendance marked successfully." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Mark-all error:", err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 

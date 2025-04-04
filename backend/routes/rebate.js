@@ -11,13 +11,13 @@ const normalizeDateToUTC = (dateString) => {
     return date;
 };
 
-// 🛑 Apply for a rebate (Only students)
+// Apply for a rebate (Only students)
 router.post("/apply", userAuth, async (req, res) => {
     try {
         const { startDate, endDate } = req.body;
         const studentId = req.user.id; // Get from JWT
 
-        // ⛔ Ensure only students can apply (assuming role is stored in req.user)
+        // Ensure only students can apply (assuming role is stored in req.user)
         if (req.user.role !== "student") {
             return res.status(403).json({ message: "Only students can apply for rebates." });
         }
@@ -28,17 +28,17 @@ router.post("/apply", userAuth, async (req, res) => {
         const requestedStart = new Date(startDate);
         const requestedEnd = new Date(endDate);
 
-        // ⛔ Students must apply at least a day before
+        // Students must apply at least a day before
         if (requestedStart < today) {
             return res.status(400).json({ message: "Cannot apply for past dates." });
         }
 
-        // ⛔ Invalid date range
+        // Invalid date range
         if (requestedEnd < requestedStart) {
             return res.status(400).json({ message: "Invalid date range." });
         }
 
-        // 🛑 Prevent overlapping rebate requests
+        // Prevent overlapping rebate requests
         const existingRebate = await Rebate.findOne({
             studentId,
             $or: [
@@ -50,7 +50,7 @@ router.post("/apply", userAuth, async (req, res) => {
             return res.status(400).json({ message: "Overlapping rebate request exists." });
         }
 
-        // ✅ Save rebate request
+        // Save rebate request
         const rebate = new Rebate({
             studentId,
             startDate: normalizeDateToUTC(startDate),
@@ -65,7 +65,7 @@ router.post("/apply", userAuth, async (req, res) => {
     }
 });
 
-// 🛑 Approve or Reject Rebate (Only Admins)
+// Approve or Reject Rebate (Only Admins)
 router.put("/update/:id", userAuth, isAdmin, async (req, res) => {
     try {
         const { status } = req.body;
@@ -94,7 +94,7 @@ router.put("/update/:id", userAuth, isAdmin, async (req, res) => {
             }
 
             await Attendance.insertMany(daysAbsent);
-            console.log(`✅ Attendance marked as ABSENT for ${daysAbsent.length} days.`);
+            // console.log(`✅ Attendance marked as ABSENT for ${daysAbsent.length} days.`);
         }
 
         res.json({ message: `Rebate ${status.toLowerCase()}.` });
