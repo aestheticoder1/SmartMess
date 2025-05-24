@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
     try {
         const { emailId, password } = req.body;
         // console.log(emailId);
-        let user = await User.findOne({ email:emailId });
+        let user = await User.findOne({ email: emailId });
         if (!user) {
             throw new Error("No such user found");
         }
@@ -73,6 +73,16 @@ router.post('/login', async (req, res) => {
         res.status(400).send("Error : " + err.message);
     }
 });
+
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'Strict',
+    });
+    res.status(200).json({ message: 'Logout successful' });
+});
+
 
 // User Profile
 router.get("/profile", userAuth, async (req, res) => {

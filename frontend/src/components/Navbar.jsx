@@ -1,21 +1,16 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
+import { toggleSidebar } from '../redux/slices/sidebarSlice'
+import { Menu } from 'lucide-react';
+import { useDispatch } from "react-redux";
 
-const Navbar = () => {
+const Navbar = ({ showHamburger = false }) => {
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   const handleProfileClick = () => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    } else if (user.role === "admin") {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/student/dashboard");
-    }
+    navigate("/login");
   };
 
   return (
@@ -28,12 +23,21 @@ const Navbar = () => {
         SmartMess
       </h1>
 
-      {/* Right: Profile Icon */}
-      <FaUserCircle
-        size={30}
-        className="text-gray-700 cursor-pointer"
-        onClick={handleProfileClick}
-      />
+      <div className="flex items-center space-x-4">
+        {/* Right: Profile Icon */}
+        <FaUserCircle
+          size={30}
+          className="text-gray-700 cursor-pointer"
+          onClick={handleProfileClick}
+        />
+        {showHamburger ? (
+          <button className="md:hidden" onClick={() => dispatch(toggleSidebar())}>
+            <Menu size={24} />
+          </button>
+        ) : (
+          <div />
+        )}
+      </div>
     </nav>
   );
 };

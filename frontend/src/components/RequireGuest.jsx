@@ -8,7 +8,11 @@ const RequireGuest = ({ children }) => {
 
     if (user) {
         // ✅ Redirect to dashboard if logged in
-        return <Navigate to="/dashboard" replace />;
+        if (user.role === "admin") {
+            return <Navigate to="/admin/dashboard" replace />;
+        } else {
+            return <Navigate to="/student/dashboard" replace />;
+        }
     }
 
     // ✅ Otherwise, show the login/register page

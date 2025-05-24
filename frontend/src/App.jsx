@@ -8,6 +8,11 @@ import Footer from './components/Footer';
 import RequireGuest from './components/RequireGuest';
 import { useDispatch } from 'react-redux';
 import { fetchUser } from './redux/slices/authSlice';
+import ProtectedRoute from './components/ProtectedRoute';
+import StudentDashboard from './pages/StudentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -17,7 +22,7 @@ const App = () => {
   }, [dispatch]);
   return (
     <BrowserRouter>
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
         <Route path='/' element={<Home />} />
 
@@ -37,8 +42,19 @@ const App = () => {
             </RequireGuest>
           }
         />
+
+        {/* Student-only routes */}
+        <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+        </Route>
+
+        {/* Admin-only routes */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
       </Routes>
       <Footer />
+      <ToastContainer/>
     </BrowserRouter>
   )
 }
