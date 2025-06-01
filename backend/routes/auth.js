@@ -2,7 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { userAuth } = require('../middlewares/auth');
+const { userAuth, isAdmin } = require('../middlewares/auth');
+const Complaint = require('../models/Complaint');
+const Notice = require('../models/Notice');
 const router = express.Router();
 
 
@@ -90,5 +92,25 @@ router.get("/profile", userAuth, async (req, res) => {
 
     res.json({ user }); // THIS must exist
 });
+
+router.get("/stats", userAuth, isAdmin, async (req, res) => {
+  try {
+    const totalStudents = await User.countDocuments({ role: "student" });
+    const pendingComplaints = await Complaint.countDocuments({ status: "Pending" });
+    const totalNotices = await Notice.countDocuments();
+    // console.log("Total Students:", totalStudents);
+    // console.log("Pending Complaints:", pendingComplaints);
+
+    res.status(200).json({
+      totalStudents,
+      pendingComplaints,
+      totalNotices,
+    });
+  } catch (err) {
+    console.error("Error fetching admin stats:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 module.exports = router;

@@ -45,13 +45,17 @@ router.put("/resolve/:id", userAuth, isAdmin, async (req, res) => {
 // 3. STUDENT FETCHES THEIR COMPLAINTS (Sorted by newest first)
 router.get("/my-complaints", userAuth, async (req, res) => {
     try {
-        const complaints = await Complaint.find({ studentId: req.user.id })
-            .sort({ createdAt: -1 }); // Sort in descending order
+        const userId = req.user._id.toString();
+
+        const complaints = await Complaint.find({ studentId: userId })
+            .sort({ createdAt: -1 });
+
         res.status(200).json(complaints);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // 4. ADMIN FETCHES ALL COMPLAINTS (Sorted by newest first)
 router.get("/all", userAuth, isAdmin, async (req, res) => {

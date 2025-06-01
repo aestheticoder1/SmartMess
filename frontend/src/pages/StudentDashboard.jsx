@@ -119,9 +119,9 @@ const StudentDashboard = () => {
       <div className="flex h-screen overflow-hidden bg-gray-100">
         <StudentSidebar />
 
-        <div className="flex-1 flex justify-center items-center p-6">
+        <div className="flex-1 flex justify-center h-fit p-6">
           <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-3xl">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Student Dashboard</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">Student Dashboard</h2>
 
             {/* Student Info */}
             <div className="mb-8">

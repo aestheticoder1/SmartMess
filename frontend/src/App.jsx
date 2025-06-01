@@ -13,6 +13,12 @@ import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import StudentAttendance from './pages/StudentAttendance';
+import StudentComplaint from './pages/StudentComplaint';
+import StudentNoticeboard from './pages/StudentNoticeboard';
+import AdminRebate from './pages/AdminRebate';
+import StudentRebate from './pages/StudentRebate';
+import AdminComplaint from './pages/AdminComplaint';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -46,11 +52,17 @@ const App = () => {
         {/* Student-only routes */}
         <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/attendance" element={<StudentAttendance />} />
+          <Route path="/student/rebates" element={<StudentRebate />} />
+          <Route path="/student/complaint" element={<StudentComplaint />} />
+          <Route path="/student/noticeboard" element={<StudentNoticeboard />} />
         </Route>
 
         {/* Admin-only routes */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/rebates" element={<AdminRebate/>} />
+          <Route path="/admin/complaints" element={<AdminComplaint />} />
         </Route>
       </Routes>
       <Footer />

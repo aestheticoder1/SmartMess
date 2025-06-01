@@ -132,4 +132,31 @@ router.post("/pay-bill", userAuth, async (req, res) => {
     }
 });
 
+
+// 4. GET OWN ATTENDANCE DETAILS (Strictly Only for the Logged-In Student)
+router.get("/my-attendance", userAuth, async (req, res) => {
+    const requestingUser = req.user;
+
+    // Ensure the logged-in user is a student
+    if (requestingUser.role !== "student") {
+        return res.status(403).json({ message: "Only students can access their own attendance." });
+    }
+
+    try {
+        // Fetch attendance records for the logged-in student
+        const attendanceRecords = await Attendance.find({
+            studentId: requestingUser._id
+        }).sort({ date: -1 });
+
+        res.json({
+            studentId: requestingUser._id,
+            name: requestingUser.name, // Optional: show name for reference
+            attendance: attendanceRecords
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 module.exports = router;

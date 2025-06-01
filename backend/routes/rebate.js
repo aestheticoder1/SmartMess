@@ -113,4 +113,18 @@ router.get("/all", userAuth, isAdmin, async (req, res) => {
     }
 });
 
+// Get all rebates for the logged-in student
+router.get("/my-rebates", userAuth, async (req, res) => {
+    try {
+        if (req.user.role !== "student") {
+            return res.status(403).json({ message: "Only students can view their rebates." });
+        }
+
+        const rebates = await Rebate.find({ studentId: req.user.id }).sort({ createdAt: -1 });
+        res.json(rebates);
+    } catch (error) {
+        res.status(500).json({ message: "Server error." });
+    }
+});
+
 module.exports = router;
