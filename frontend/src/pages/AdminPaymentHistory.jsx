@@ -13,7 +13,7 @@ const AdminPaymentHistory = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/payments/all", {
+      const res = await axios.get("https://smart-mess-backend.vercel.app/api/payments/all", {
         params: { page, limit: 50 },
         withCredentials: true,
       });

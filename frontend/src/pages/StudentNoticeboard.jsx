@@ -11,7 +11,7 @@ const StudentNoticeboard = () => {
     const fetchNotices = async () => {
         setLoading(true);
         try {
-            const res = await axios.get("http://localhost:5000/api/notice/all", {
+            const res = await axios.get("https://smart-mess-backend.vercel.app/api/notice/all", {
                 withCredentials: true,
             });
             setNotices(res.data);

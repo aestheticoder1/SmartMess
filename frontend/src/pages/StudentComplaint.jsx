@@ -13,7 +13,7 @@ const StudentComplaints = () => {
 
     const fetchComplaints = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/complaint/my-complaints", {
+            const res = await axios.get("https://smart-mess-backend.vercel.app/api/complaint/my-complaints", {
                 withCredentials: true,
             });
             console.log("Fetched complaints:", res);
@@ -35,7 +35,7 @@ const StudentComplaints = () => {
         try {
             setLoading(true);
             const res = await axios.post(
-                "http://localhost:5000/api/complaint/create",
+                "https://smart-mess-backend.vercel.app/api/complaint/create",
                 { description },
                 { withCredentials: true }
             );
