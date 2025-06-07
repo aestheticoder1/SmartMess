@@ -16,7 +16,7 @@ const razorpay = new Razorpay({
 });
 
 //  Create an Order (Student Requests to Pay)
-router.post("/create-order",userAuth, async (req, res) => {
+router.post("/create-order", userAuth, async (req, res) => {
     const { studentId, amount } = req.body;
     const requestingUser = req.user;
     try {
@@ -39,7 +39,7 @@ router.post("/create-order",userAuth, async (req, res) => {
 });
 
 // Verify Payment and Update Database
-router.post("/verify-payment",userAuth, async (req, res) => {
+router.post("/verify-payment", userAuth, async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, studentId } = req.body;
 
     const generated_signature = crypto
@@ -73,6 +73,30 @@ router.post("/verify-payment",userAuth, async (req, res) => {
         res.json({ success: true, message: "Payment verified, attendance updated" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Error updating records", error });
+    }
+});
+
+router.get("/all", userAuth, isAdmin, async (req, res) => {
+    try {
+        const { page = 1, limit = 50 } = req.query;
+
+        const payments = await Payment.find()
+            .populate('studentId', 'name')
+            .sort({ paymentDate: -1 }) // latest first
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const totalCount = await Payment.countDocuments();
+
+        res.json({
+            payments,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: parseInt(page),
+            totalCount,
+        });
+    } catch (error) {
+        console.error("Fetch payments error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
 

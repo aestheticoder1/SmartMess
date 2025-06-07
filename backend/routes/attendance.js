@@ -159,4 +159,33 @@ router.get("/my-attendance", userAuth, async (req, res) => {
 });
 
 
+// GET /api/bills/pending
+router.get("/pending", async (req, res) => {
+  try {
+    // Only present days and unbilled
+    const unpaidAttendances = await Attendance.find({ 
+      is_billed: false, 
+      status: "present" 
+    })
+    .populate("studentId", "name email")
+    .sort({ date: -1 });
+
+    // Group by student
+    const grouped = unpaidAttendances.reduce((acc, att) => {
+      const sid = att.studentId._id.toString();
+      if (!acc[sid]) acc[sid] = { student: att.studentId, attendanceDates: [] };
+      acc[sid].attendanceDates.push(att.date);
+      return acc;
+    }, {});
+
+    const result = Object.values(grouped);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error fetching pending bills" });
+  }
+});
+
+
+
 module.exports = router;

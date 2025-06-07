@@ -13,7 +13,6 @@ const AdminDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Example admin stats — you can expand/change as per your backend
   const [stats, setStats] = useState({
     totalStudents: 0,
     pendingComplaints: 0,
@@ -25,7 +24,6 @@ const AdminDashboard = () => {
       const res = await axios.get('http://localhost:5000/api/user/stats', {
         withCredentials: true,
       });
-      // console.log('Admin stats:', res.data);
       setStats(res.data);
     } catch (err) {
       console.error('Failed to fetch admin stats:', err);
@@ -39,10 +37,11 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/user/logout', {}, {
-        withCredentials: true,
-      });
-
+      await axios.post(
+        'http://localhost:5000/api/user/logout',
+        {},
+        { withCredentials: true }
+      );
       Cookies.remove('token');
       dispatch(logoutUser());
       navigate('/login');
@@ -52,13 +51,33 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleMarkAllAttendance = async () => {
+    try {
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0); // Normalize to UTC start of day
+
+      const res = await axios.post(
+        'http://localhost:5000/api/attendance/mark-all',
+        { date: today },
+        { withCredentials: true }
+      );
+
+      toast.success(res.data.message || 'Attendance marked for today!');
+    } catch (error) {
+      console.error('Mark attendance error:', error);
+      toast.error(
+        error.response?.data?.message || 'Failed to mark attendance'
+      );
+    }
+  };
+
   return (
     <>
       <Navbar showHamburger={true} />
-      <div className="flex h-screen overflow-hidden bg-gray-100">
+      <div className="flex md:h-screen min-h-screen bg-gray-100">
         <AdminSidebar />
 
-        <div className="flex-1 flex justify-center h-fit p-6">
+        <div className="flex-1 flex justify-center h-fit p-6 overflow-y-auto">
           <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-4xl">
             <h2 className="text-3xl font-bold text-gray-800 mb-8">Admin Dashboard</h2>
 
@@ -93,10 +112,14 @@ const AdminDashboard = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-center gap-6">
-              {/* Add buttons for quick admin actions if you want */}
-              {/* Example: */}
-              {/* <button className="px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">Manage Users</button> */}
+            <div className="flex flex-wrap justify-center gap-6">
+              <button
+                onClick={handleMarkAllAttendance}
+                className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition"
+              >
+                Mark Attendance for Today
+              </button>
+
               <button
                 onClick={handleLogout}
                 className="px-6 py-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition"

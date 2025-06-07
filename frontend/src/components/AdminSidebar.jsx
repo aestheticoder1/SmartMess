@@ -23,17 +23,27 @@ const AdminSidebar = () => {
                 </li>
                 <li>
                     <Link to="/admin/complaints" className="hover:text-gray-300">
-                        Complaints
+                        Manage Complaints
                     </Link>
                 </li>
                 <li>
                     <Link to="/admin/notices" className="hover:text-gray-300">
-                        Manage Notices
+                        Noticeboard
                     </Link>
                 </li>
                 <li>
-                    <Link to="/admin/reports" className="hover:text-gray-300">
-                        Reports
+                    <Link to="/admin/payments" className="hover:text-gray-300">
+                        Payment History
+                    </Link>
+                </li>
+                <li>
+                    <Link to="/admin/pendingBills" className="hover:text-gray-300">
+                        Pending Bills
+                    </Link>
+                </li>
+                <li>
+                    <Link to="/admin/menu" className="hover:text-gray-300">
+                        Manage Menu
                     </Link>
                 </li>
                 {/* Add more admin links as needed */}

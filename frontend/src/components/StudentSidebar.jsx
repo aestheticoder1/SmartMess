@@ -12,6 +12,7 @@ const StudentSidebar = () => {
         <li><Link to="/student/rebates">Apply Rebate</Link></li>
         <li><Link to="/student/complaint">File Complaint</Link></li>
         <li><Link to="/student/noticeboard">Noticeboard</Link></li>
+        <li><Link to="/student/menu">View Menu</Link></li>
       </ul>
     </div>
   );

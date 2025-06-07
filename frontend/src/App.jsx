@@ -19,6 +19,11 @@ import StudentNoticeboard from './pages/StudentNoticeboard';
 import AdminRebate from './pages/AdminRebate';
 import StudentRebate from './pages/StudentRebate';
 import AdminComplaint from './pages/AdminComplaint';
+import AdminNotice from './pages/AdminNotice';
+import AdminPaymentHistory from './pages/AdminPaymentHistory';
+import AdminPendingBills from './pages/AdminPendingBills';
+import AdminMenu from './pages/AdminMenu';
+import StudentMenu from './pages/StudentMenu';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -56,6 +61,7 @@ const App = () => {
           <Route path="/student/rebates" element={<StudentRebate />} />
           <Route path="/student/complaint" element={<StudentComplaint />} />
           <Route path="/student/noticeboard" element={<StudentNoticeboard />} />
+          <Route path="/student/menu" element={<StudentMenu />} />
         </Route>
 
         {/* Admin-only routes */}
@@ -63,6 +69,10 @@ const App = () => {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/rebates" element={<AdminRebate/>} />
           <Route path="/admin/complaints" element={<AdminComplaint />} />
+          <Route path="/admin/notices" element={<AdminNotice />} />
+          <Route path="/admin/payments" element={<AdminPaymentHistory />} />
+          <Route path="/admin/pendingBills" element={<AdminPendingBills/>} />
+          <Route path="/admin/menu" element={<AdminMenu />} />
         </Route>
       </Routes>
       <Footer />

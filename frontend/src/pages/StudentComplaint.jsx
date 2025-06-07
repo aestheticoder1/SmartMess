@@ -16,6 +16,7 @@ const StudentComplaints = () => {
             const res = await axios.get("http://localhost:5000/api/complaint/my-complaints", {
                 withCredentials: true,
             });
+            console.log("Fetched complaints:", res);
             setComplaints(res.data);
         } catch (err) {
             console.error("Failed to fetch complaints:", err);
