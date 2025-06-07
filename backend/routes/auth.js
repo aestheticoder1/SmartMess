@@ -7,7 +7,6 @@ const Complaint = require('../models/Complaint');
 const Notice = require('../models/Notice');
 const router = express.Router();
 
-
 // 1.) User Registration
 // @route POST /api/user/register
 // @desc Register a new user
@@ -25,7 +24,12 @@ router.post('/register', async (req, res) => {
         const savedUser = await user.save();
         const token = await savedUser.getJWT();
 
-        res.cookie("token", token, { expires: new Date(Date.now() + 8 * 3600000) });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 8 * 3600000) // 8 hours
+        });
 
         res.json({
             message: "User registered successfully!",
@@ -38,7 +42,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-
 // 2.) User Login
 // @route POST /api/user/login
 // @desc Authenticate user
@@ -46,7 +49,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { emailId, password } = req.body;
-        // console.log(emailId);
+
         let user = await User.findOne({ email: emailId });
         if (!user) {
             throw new Error("No such user found");
@@ -54,63 +57,60 @@ router.post('/login', async (req, res) => {
 
         const isPasswordValid = await user.matchPassword(password);
         if (isPasswordValid) {
-
-            // CREATE A JWT token
             const token = await user.getJWT();
-            // console.log(token)
-            // PASS THE TOKEN IN THE COOKIE THEN TO THE RESPONSE
-            res.cookie("token", token, { expires: new Date(Date.now() + 8 * 3600000) }); //EXPIRES IN 8 HOURS
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                expires: new Date(Date.now() + 8 * 3600000) // 8 hours
+            });
 
             res.json({
-                message: "User logged in sucessfully!",
+                message: "User logged in successfully!",
                 data: user,
                 token: token
             });
-        }
-        else {
+        } else {
             throw new Error("Invalid credentials");
         }
-    }
-    catch (err) {
+    } catch (err) {
         res.status(400).send("Error : " + err.message);
     }
 });
 
-
+// 3.) Logout
 router.post('/logout', (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'Strict',
+        secure: true,
+        sameSite: 'none'
     });
     res.status(200).json({ message: 'Logout successful' });
 });
 
-
-// User Profile
+// 4.) User Profile
 router.get("/profile", userAuth, async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
-
-    res.json({ user }); // THIS must exist
+    res.json({ user });
 });
 
+// 5.) Admin Stats
 router.get("/stats", userAuth, isAdmin, async (req, res) => {
-  try {
-    const totalStudents = await User.countDocuments({ role: "student" });
-    const pendingComplaints = await Complaint.countDocuments({ status: "Pending" });
-    const totalNotices = await Notice.countDocuments();
-    // console.log("Total Students:", totalStudents);
-    // console.log("Pending Complaints:", pendingComplaints);
+    try {
+        const totalStudents = await User.countDocuments({ role: "student" });
+        const pendingComplaints = await Complaint.countDocuments({ status: "Pending" });
+        const totalNotices = await Notice.countDocuments();
 
-    res.status(200).json({
-      totalStudents,
-      pendingComplaints,
-      totalNotices,
-    });
-  } catch (err) {
-    console.error("Error fetching admin stats:", err.message);
-    res.status(500).json({ error: "Server error" });
-  }
+        res.status(200).json({
+            totalStudents,
+            pendingComplaints,
+            totalNotices,
+        });
+    } catch (err) {
+        console.error("Error fetching admin stats:", err.message);
+        res.status(500).json({ error: "Server error" });
+    }
 });
-
 
 module.exports = router;
